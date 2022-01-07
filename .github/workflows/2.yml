@@ -11,17 +11,17 @@ on:
       name:
         description: 'Build Type'
         required: true
-        default: 'release'
+        default: 'debug'
         type: choice
         options:
         - release
         - sky
         - staging
-        - debug
+        - debug { % endif % }
       flavor:
         description: 'Build Flavor'
         required: true
-        default: 'midroid'
+        default: 'lgstore'
         type: choice
         options:
         - android
@@ -35,8 +35,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
+  # This workflow contains a single job called "build"
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -44,4 +44,4 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: build with type and flavour
-      run: echo "Building with ${{ github.event.inputs.type }} ${{ github.event.inputs.flavour }}"
+      run: echo "Building with ${{ github.event.inputs.name }} ${{ github.event.inputs.flavor }}"
