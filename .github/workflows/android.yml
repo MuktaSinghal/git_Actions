@@ -8,7 +8,7 @@ on:
     inputs:
       name:
         description: 'Build Type'
-        required: true
+        required: false
         default: ''
         type: choice
         options:
@@ -19,7 +19,7 @@ on:
         - Vapt
       flavor:
         description: 'Build Flavor'
-        required: true
+        required: false
         default: ''
         type: choice
         options:
