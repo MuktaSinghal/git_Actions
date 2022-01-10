@@ -1,0 +1,73 @@
+name: Android CI
+
+on:
+  # Trigger for manual apk generation
+
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        description: 'Build Type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+        - release
+        - sky
+        - staging
+        - debug
+        - vapt
+        - all
+      flavor:
+        description: 'Build Flavor'
+        required: true
+        default: 'android'
+        type: choice
+        options:
+        - android
+        - midroid
+        - indusos
+        - oppo
+        - huawei
+        - samsung
+        - vivo
+        - lgstore
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    #0. Runs a single command using the runners shell
+    - name: build with type and flavour
+      run: echo "Building with ${{ github.event.inputs.name }} ${{ github.event.inputs.flavor }}"
+      
+    #1.
+    - name: Checkout
+      uses: actions/checkout@v2.4.0
+
+    #2.
+    - name: Setup Java JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    #3. Setup Runtime Permission for gradle in Linux OS
+    - name: Make Gradle executable
+      run: chmod +x ./gradlew
+
+    #4. Clean Project
+    - name: Build Clean
+      run: ./gradlew clean
+      
+    #5. Build Project
+    - name: Build All
+      run: ./gradlew build
+      
+    #6. Assemble based on type and flavor
+    - name: Build with ${{ github.event.inputs.name }} ${{ github.event.inputs.flavor }}
+      run: ./gradlew assemble${{ github.event.inputs.flavor }}${{ github.event.inputs.name }}
