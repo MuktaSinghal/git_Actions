@@ -12,6 +12,7 @@ on:
         default: ''
         type: choice
         options:
+        - ''
         - Release
         - Sky
         - Staging
@@ -24,6 +25,7 @@ on:
         type: choice
         options:
         - Android
+        - ""
         - Midroid
         - Indusos
         - Oppo
