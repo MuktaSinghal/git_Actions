@@ -9,7 +9,7 @@ on:
       name:
         description: 'Build Type'
         required: false
-        default: ''
+        default: 'Release'
         type: choice
         options:
         - ''
@@ -21,11 +21,11 @@ on:
       flavor:
         description: 'Build Flavor'
         required: false
-        default: ''
+        default: 'Android'
         type: choice
         options:
+        - ''
         - Android
-        - ""
         - Midroid
         - Indusos
         - Oppo
