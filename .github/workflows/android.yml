@@ -8,8 +8,8 @@ on:
     inputs:
       name:
         description: 'Build Type'
-        required: false
-        default: 'Release'
+        required: true
+        default: ''
         type: choice
         options:
         - ''
@@ -20,8 +20,8 @@ on:
         - Vapt
       flavor:
         description: 'Build Flavor'
-        required: false
-        default: 'Android'
+        required: true
+        default: 'Midroid'
         type: choice
         options:
         - ''
