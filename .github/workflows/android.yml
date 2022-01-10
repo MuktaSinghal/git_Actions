@@ -9,22 +9,21 @@ on:
       name:
         description: 'Build Type'
         required: true
-        default: ''
+        default: 'Release'
         type: choice
         options:
-        - ''
         - Release
         - Sky
         - Staging
         - Debug
         - Vapt
+        - All
       flavor:
         description: 'Build Flavor'
         required: true
         default: 'Midroid'
         type: choice
         options:
-        - ''
         - Android
         - Midroid
         - Indusos
@@ -33,6 +32,7 @@ on:
         - Samsung
         - Vivo
         - Lgstore
+        - All
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
