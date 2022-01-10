@@ -37,7 +37,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build_basic:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -72,3 +72,77 @@ jobs:
     #6. Assemble based on type and flavor
     - name: Build with ${{ github.event.inputs.name }} ${{ github.event.inputs.flavor }}
       run: ./gradlew assemble${{ github.event.inputs.flavor }}${{ github.event.inputs.name }}
+      
+      
+      
+  build_release_midroid:
+    # wait until project is build successfully
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.flavor == 'Midroid' || github.event.inputs.flavor == 'All'}}
+    
+    steps:
+      #1.
+      - name: Checkout
+        uses: actions/checkout@v1
+      #2.
+      - name: Setup Java JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      #3.
+      # Setup Runtime Local Properties Generation & Credentials configured in Github Secrets
+      - name: Decode Secrets to Create local properties file
+        env:
+          BASEURL: ${{ secrets.BASEURL }}
+      - run: echo BASEURL="$BASEURL" > ./local.properties
+      - run: echo hvsdkAccessKey=${{ secrets.hvsdkAccessKey }} >> local.properties
+      - run: echo hvsdkSecretKey=${{ secrets.hvsdkSecretKey }} >> local.properties
+      - run: echo VkycUserName=${{ secrets.VkycUserName }} >> local.properties
+      - run: echo vkycPassword=${{ secrets.vkycPassword }} >> local.properties
+      - run: echo AWS_MAVEN_URL=${{ secrets.AWS_MAVEN_URL }} >> local.properties
+      - run: echo AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} >> local.properties
+      - run: echo AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} >> local.properties
+      - run: echo DIGITAP_REPO_URL=${{ secrets.DIGITAP_REPO_URL }} >> local.properties
+      - run: echo DIGITAP_ACCESS_KEY=${{ secrets.DIGITAP_ACCESS_KEY }} >> local.properties
+      - run: echo DIGITAP_SECRET_KEY=${{ secrets.DIGITAP_SECRET_KEY }} >> local.properties
+      - run: echo stageKeyAlias=${{ secrets.stageKeyAlias }} >> local.properties
+      - run: echo stageKeyPassword=${{ secrets.stageKeyPassword }} >> local.properties
+      - run: echo stageStorePassword=${{ secrets.stageStorePassword }} >> local.properties
+      - run: echo keyAlias=${{ secrets.keyAlias }} >> local.properties
+      - run: echo keyPassword=${{ secrets.keyPassword }} >> local.properties
+      - run: echo storePassword=${{ secrets.storePassword }} >> local.properties
+      - run: echo ZETA_USERNAME=${{ secrets.ZETA_USERNAME }} >> local.properties
+      - run: echo ZETA_PASSWORD=${{ secrets.ZETA_PASSWORD }} >> local.properties
+
+      #4.
+      # Setup Runtime Permission for gradle in Linux OS
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+      #5.
+      # Clean Project
+      - name: Build Clean
+        run: ./gradlew clean
+      #6.
+      # Midroid Release APK
+      - name: Midroid Release Assemble
+        run: bash ./gradlew :app:assembleMidroidRelease
+      #7.
+      # Sign Midroid App
+      - name: Sign Midroid App
+        uses: r0adkll/sign-android-release@v1
+        id: sign_midroid_app
+        with:
+          releaseDirectory: ${{ github.workspace }}/app/build/outputs/apk/midroid/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_RELEASE }}
+          alias: ${{ secrets.keyAlias }}
+          keyStorePassword: ${{ secrets.storePassword }}
+          keyPassword: ${{ secrets.keyPassword }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.3"
+      #8.
+      # Upload Midroid Apk Artifact
+      - name: KB Midroid Release Apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: KB Midroid Release Apk
+          path: ${{steps.sign_midroid_app.outputs.signedReleaseFile}}
