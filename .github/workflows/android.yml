@@ -9,7 +9,7 @@ on:
       name:
         description: 'Build Type'
         required: true
-        default: 'release'
+        default: ''
         type: choice
         options:
         - Release
@@ -17,11 +17,10 @@ on:
         - Staging
         - Debug
         - Vapt
-        - all
       flavor:
         description: 'Build Flavor'
         required: true
-        default: 'android'
+        default: ''
         type: choice
         options:
         - Android
@@ -61,12 +60,12 @@ jobs:
       run: chmod +x ./gradlew
 
     #4. Clean Project
-    - name: Build Clean
-      run: ./gradlew clean
+    #- name: Build Clean
+    # run: ./gradlew clean
       
     #5. Build Project
-    - name: Build All
-      run: ./gradlew build
+    #- name: Build All
+    # run: ./gradlew build
       
     #6. Assemble based on type and flavor
     - name: Build with ${{ github.event.inputs.name }} ${{ github.event.inputs.flavor }}
