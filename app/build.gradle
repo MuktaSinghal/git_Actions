@@ -18,12 +18,38 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            applicationIdSuffix '.release'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        staging {
+            minifyEnabled true
+            shrinkResources true
+            debuggable true
+            applicationIdSuffix '.stage'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            applicationIdSuffix '.debug'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    flavorDimensions "store"
+    productFlavors {
+        android {
+            dimension "store"
+        }
+        midroid {
+            dimension "store"
+        }
+        indusos {
+            dimension "store"
+        }
     }
 }
 
