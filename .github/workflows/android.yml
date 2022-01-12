@@ -15,9 +15,6 @@ on:
         options:
           - Release
           - Sky
-#           - Staging
-#           - Debug
-#           - Vapt
           - Release, Sky, Staging, Debug, Vapt
       flavor:
         description: 'Build Flavor'
@@ -28,11 +25,6 @@ on:
           - Android
           - Midroid
           - Indusos
-#           - Oppo
-#           - Huawei
-#           - Samsung
-#           - Vivo
-#           - Lgstore
           - Android, Midroid, Indusos, Oppo, Huawei, Samsung, Vivo, Lgstore
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -44,7 +36,6 @@ jobs:
       matrix:
         buildtype: ['${{github.event.inputs.name}}']
         flavor: ['${{github.events.inputs.flavor}}']
-    #        ${{ matrix.buildtype }} ${{ matrix.flavor }}
     steps:
       - name: String Operation Flavor
         id: str_flavor
