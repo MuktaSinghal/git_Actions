@@ -18,7 +18,7 @@ on:
           - Staging
           - Debug
           - Vapt
-          - All
+          - Release, Sky, Staging, Debug, Vapt
       flavor:
         description: 'Build Flavor'
         required: true
@@ -33,7 +33,7 @@ on:
           - Samsung
           - Vivo
           - Lgstore
-          - All
+          - Android, Midroid, Indusos, Oppo, Huawei, Samsung, Vivo, Lgstore
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -42,33 +42,33 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        buildtype: [ release, sky, staging, debug, vapt]
-        flavor: [ android, midroid, indusos, oppo, huawei, samsung, vivo, lgstore]
+        type: [ github.event.inputs.name]
+        flavor: [ github.events.inputs.flavor]
     #        ${{ matrix.buildtype }} ${{ matrix.flavor }}
     steps:
       - name: String Operation Flavor
         id: str_flavor
         uses: ASzc/change-string-case-action@v2
         with:
-          string: ${{ github.event.inputs.flavor}}
+          string: ${{ matrix.flavor}}
 
       - name: String Operation Build Type
         id: str_buildtype
         uses: ASzc/change-string-case-action@v2
         with:
-          string: ${{ github.event.inputs.name}}
+          string: ${{ matrix.type}}
 
-      - name: Checkout
-        uses: actions/checkout@v2.4.0
+#       - name: Checkout
+#         uses: actions/checkout@v2.4.0
 
-      - name: Setup Java JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
+#       - name: Setup Java JDK 11
+#         uses: actions/setup-java@v1
+#         with:
+#           java-version: 11
 
-      # Setup Runtime Permission for gradle in Linux OS
-      - name: Make Gradle executable
-        run: chmod +x ./gradlew
+#       # Setup Runtime Permission for gradle in Linux OS
+#       - name: Make Gradle executable
+#         run: chmod +x ./gradlew
 
 #      # Build Assemble APK with specific type and flavor
 #      # This step will get skipped if build type or flavor is "All"
@@ -76,50 +76,50 @@ jobs:
 #        if: ${{ github.event.inputs.name != 'All' && github.event.inputs.flavor != 'All'}}
 #        run: ./gradlew assemble${{ github.event.inputs.flavor }}${{ github.event.inputs.name }}
 
-      # Build Assemble APK with specific type
-      # This step will get skipped if build type is "All"
-      - name: Assemble ${{ github.event.inputs.name }}
-        if: ${{ github.event.inputs.name != 'All' && github.event.inputs.flavor == 'All'}}
-        run: ./gradlew assemble${{ github.event.inputs.name }}
+#       # Build Assemble APK with specific type
+#       # This step will get skipped if build type is "All"
+#       - name: Assemble ${{ github.event.inputs.name }}
+#         if: ${{ github.event.inputs.name != 'All' && github.event.inputs.flavor == 'All'}}
+#         run: ./gradlew assemble${{ github.event.inputs.name }}
 
-#      # Build Assemble APK with specific flavor
-#      # This step will get skipped if build flavor is "All"
-#      - name: Assemble ${{ github.event.inputs.flavor }}
-#        if: ${{ github.event.inputs.name == 'All' && github.event.inputs.flavor != 'All'}}
-#        run: ./gradlew assemble${{ github.event.inputs.flavor }}
-#
-#      # Build Assemble APK with all type and flavor
-#      # This step will get executed only if build type and flavor is "All"
-#      - name: ${{ github.event.inputs.flavor }} ${{ github.event.inputs.name }} Assemble
-#        if: ${{ github.event.inputs.name == 'All' && github.event.inputs.flavor == 'All'}}
-#        run: ./gradlew assemble
+# #      # Build Assemble APK with specific flavor
+# #      # This step will get skipped if build flavor is "All"
+# #      - name: Assemble ${{ github.event.inputs.flavor }}
+# #        if: ${{ github.event.inputs.name == 'All' && github.event.inputs.flavor != 'All'}}
+# #        run: ./gradlew assemble${{ github.event.inputs.flavor }}
+# #
+# #      # Build Assemble APK with all type and flavor
+# #      # This step will get executed only if build type and flavor is "All"
+# #      - name: ${{ github.event.inputs.flavor }} ${{ github.event.inputs.name }} Assemble
+# #        if: ${{ github.event.inputs.name == 'All' && github.event.inputs.flavor == 'All'}}
+# #        run: ./gradlew assemble
 
-      # Sign App only for build type Release else skip this step.
-      - name: Sign ${{ matrix.flavor }} App
-        if: ${{ github.event.inputs.name == 'Release'}}
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: ${{ github.workspace }}/app/build/outputs/apk/${{ matrix.flavor }}/${{ steps.str_buildtype.outputs.lowercase }}
-          signingKeyBase64: ${{ secrets.KEYSTORE_RELEASE }}
-          alias: ${{ secrets.keyAlias }}
-          keyStorePassword: ${{ secrets.storePassword }}
-          keyPassword: ${{ secrets.keyPassword }}
-        env:
-          BUILD_TOOLS_VERSION: "30.0.3"
+#       # Sign App only for build type Release else skip this step.
+#       - name: Sign ${{ matrix.flavor }} App
+#         if: ${{ github.event.inputs.name == 'Release'}}
+#         uses: r0adkll/sign-android-release@v1
+#         id: sign_app
+#         with:
+#           releaseDirectory: ${{ github.workspace }}/app/build/outputs/apk/${{ matrix.flavor }}/${{ steps.str_buildtype.outputs.lowercase }}
+#           signingKeyBase64: ${{ secrets.KEYSTORE_RELEASE }}
+#           alias: ${{ secrets.keyAlias }}
+#           keyStorePassword: ${{ secrets.storePassword }}
+#           keyPassword: ${{ secrets.keyPassword }}
+#         env:
+#           BUILD_TOOLS_VERSION: "30.0.3"
 
-      # Determine path for uploading generated apk
-      - name: Determine path to upload
-        uses: haya14busa/action-cond@v1
-        id: uploadPath
-        with:
-          cond: ${{ github.event.inputs.name == 'Release' }}
-          if_true: ${{steps.sign_app.outputs.signedReleaseFile}}
-          if_false: ${{ github.workspace }}/app/build/outputs/apk/${{ matrix.flavor }}/${{ steps.str_buildtype.outputs.lowercase }}
+#       # Determine path for uploading generated apk
+#       - name: Determine path to upload
+#         uses: haya14busa/action-cond@v1
+#         id: uploadPath
+#         with:
+#           cond: ${{ github.event.inputs.name == 'Release' }}
+#           if_true: ${{steps.sign_app.outputs.signedReleaseFile}}
+#           if_false: ${{ github.workspace }}/app/build/outputs/apk/${{ matrix.flavor }}/${{ steps.str_buildtype.outputs.lowercase }}
 
-      # Upload Apk Artifact
-      - name: Upload KB ${{ matrix.flavor }} ${{ github.event.inputs.name }} Apk
-        uses: actions/upload-artifact@v2
-        with:
-          name: KB ${{ matrix.flavor }} ${{ github.event.inputs.name }} Apk
-          path: ${{ steps.uploadPath.outputs.value }}
+#       # Upload Apk Artifact
+#       - name: Upload KB ${{ matrix.flavor }} ${{ github.event.inputs.name }} Apk
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: KB ${{ matrix.flavor }} ${{ github.event.inputs.name }} Apk
+#           path: ${{ steps.uploadPath.outputs.value }}
