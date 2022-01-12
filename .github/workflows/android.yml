@@ -13,27 +13,27 @@ on:
         default: 'Release'
         type: choice
         options:
-          - '[Release]'
-          - '[Sky]'
+          - Release
+          - Sky
 #           - Staging
 #           - Debug
 #           - Vapt
-          - '[Release, Sky, Staging, Debug, Vapt]'
+          - Release, Sky, Staging, Debug, Vapt
       flavor:
         description: 'Build Flavor'
         required: true
         default: 'Midroid'
         type: choice
         options:
-          - '[Android]'
-          - '[Midroid]'
-          - '[Indusos]'
+          - Android
+          - Midroid
+          - Indusos
 #           - Oppo
 #           - Huawei
 #           - Samsung
 #           - Vivo
 #           - Lgstore
-          - '[Android, Midroid, Indusos, Oppo, Huawei, Samsung, Vivo, Lgstore]'
+          - Android, Midroid, Indusos, Oppo, Huawei, Samsung, Vivo, Lgstore
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -42,8 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        buildtype: ${{github.event.inputs.name}}
-        flavor: ${{github.events.inputs.flavor}}
+        buildtype: ['${{github.event.inputs.name}}']
+        flavor: ['${{github.events.inputs.flavor}}']
     #        ${{ matrix.buildtype }} ${{ matrix.flavor }}
     steps:
       - name: String Operation Flavor
@@ -56,7 +56,7 @@ jobs:
         id: str_buildtype
         uses: ASzc/change-string-case-action@v2
         with:
-          string: ${{ matrix.type}}
+          string: ${{ matrix.buildtype}}
 
 #       - name: Checkout
 #         uses: actions/checkout@v2.4.0
