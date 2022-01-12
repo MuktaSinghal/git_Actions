@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         buildtype: ['${{github.event.inputs.name}}']
-        flavor: ['${{github.events.inputs.flavor}}']
+        flavor: ['${{github.event.inputs.flavor}}']
     steps:
       - name: String Operation Flavor
         id: str_flavor
